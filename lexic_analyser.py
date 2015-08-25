@@ -1,72 +1,75 @@
 __author__ = 'Kaike'
-from enum import Enum
-import tokens as Token
+import tokens
 
 class lexicAnalyser():
 
     def __init__(self):
-        code = ""
-        i = 0
+        self.code = ""
+        self.i = 0
 
     def setCode(self, _code):
         code = _code
         i = 0;
 
+    def compile(self):
+        self.nextToken()
+
     def nextToken(self):
-        while(lexicAnalyser.isSpace(nextChar)):
-            nextChar = lexicAnalyser.readChar()
+        nextChar = ''
+        while(self.isSpace(nextChar)):
+            nextChar = self.readChar()
 
         if nextChar.isalpha():
             text = ""
             while True:
                 text += nextChar
-                nextChar = lexicAnalyser.readChar()
-                if not lexicAnalyser.isalnum(nextChar) and nextChar != "_":
+                nextChar = self.readChar()
+                if (not self.isalnum(nextChar)) and nextChar != "_":
                     break
 
-            token = Token.searchKeyWord(text)
-            if(token == 'ID'):
-                tokenSec = Token.searchName(text)
+            token = tokens.searchKeyWord(text)
+            if(token == -1):
+                tokenSec = tokens.searchName(text)
 
-        elif lexicAnalyser.isNumeric(nextChar):
+        elif self.isNumeric(nextChar):
             num = ""
             while True:
                 num += nextChar
-                nextChar = lexicAnalyser.readChar()
-                if not lexicAnalyser.isNumeric(nextChar):
+                nextChar = self.readChar()
+                if not self.isNumeric(nextChar):
                     break
 
-            token = 'NUMERAL'
-            tokenSec = lexicAnalyser.addIntConst(num)
+            token = tokens.Tokens.Numeral.value
+            tokenSec = self.addIntConst(num)
 
         elif nextChar == '"':
             text = ""
             while True:
                 text += nextChar
-                nextChar = lexicAnalyser.readChar()
+                nextChar = self.readChar()
                 if nextChar == '"':
                     break
-            token = 'STRING'
+            token = tokens.Tokens.STRING.value
             tokenSec = text
         else:
             if nextChar == '\'':
-                nextChar = lexicAnalyser.readChar()
-                token = 'CHARACTER'
-                tokenSec = lexicAnalyser.addCharConst(nextChar)
-                nextChar = lexicAnalyser.readChar()
-                nextChar = lexicAnalyser.readChar()
+                nextChar = self.readChar()
+                token = tokens.Tokens.CHARACTER.value
+                tokenSec = self.addCharConst(nextChar)
+                nextChar = self.readChar()
+                nextChar = self.readChar()
             elif nextChar == ':':
-                nextChar = lexicAnalyser.readChar()
-                token = 'COLON'
+                nextChar = self.readChar()
+                token = tokens.Tokens.COLON.value
             elif nextChar == '+':
-                nextChar = lexicAnalyser.readChar()
-                if nextChar == lexicAnalyser.readChar():
-                    token = 'PLUS_PLUS'
-                    nextChar = lexicAnalyser.readChar()
+                nextChar = self.readChar()
+                if nextChar == self.readChar():
+                    token = tokens.Tokens.PLUS_PLUS.value
+                    nextChar = self.readChar()
                 else:
-                    token = 'PLUS'
+                    token = tokens.Tokens.PLUS.value
             else:
-                token = 'UNKNOWN'
+                token = tokens.Tokens.UNKNOWN.value
         return token
 
 
@@ -75,8 +78,10 @@ class lexicAnalyser():
 
 
     def readChar(self):
-        lexicAnalyser.i += 1
-        return lexicAnalyser.code[lexicAnalyser.i-1]
+        self.i += 1
+        if self.i-1 <= len(self.code):
+            return lexicAnalyser.code[lexicAnalyser.i-1]
+        return "\0"
 
     def isNumeric(self,ch):
         try:

@@ -16,3 +16,17 @@ possible_tokens_ids = ['array', 'boolean', 'break', 'char', 'continue', 'do', 'e
 
 
 Tokens = Enum._create_('Tokens', possible_tokens, None, int)
+
+def searchKeyWord(text):
+    if possible_tokens_ids.__contains__(text.lower()):
+        return possible_tokens_ids.index(text.lower())
+    else:
+        return -1
+
+def searchName(text):
+    if possible_tokens.__contains__(text.upper()):
+        return possible_tokens.index(text.upper())
+    else:
+        return -1
+
+
