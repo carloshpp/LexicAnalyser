@@ -1,11 +1,15 @@
 __author__ = 'Kaike'
 import tokens
 
+# add comments do the project
 class lexicAnalyser():
 
     def __init__(self):
         self.code = ""
         self.i = 0
+        #TO DO: save consts and sec tokens
+        self.names = []
+        self.Consts = []
 
     def setCode(self, _code):
         code = _code
@@ -15,6 +19,7 @@ class lexicAnalyser():
         self.nextToken()
 
     def nextToken(self):
+        # TO DO: loop to compile the whole code
         nextChar = ''
         while(self.isSpace(nextChar)):
             nextChar = self.readChar()
@@ -28,6 +33,7 @@ class lexicAnalyser():
                     break
 
             token = tokens.searchKeyWord(text)
+            # TO DO: save the secundary token
             if(token == -1):
                 tokenSec = tokens.searchName(text)
 
@@ -90,11 +96,14 @@ class lexicAnalyser():
         except ValueError:
             return False
 
+    # TO DO: Not Implement Yet
     def addStringConst(self, string):
         return ""
 
+    # TO DO: Not Implement Yet
     def addCharConst(self, ch):
         return ""
 
+    # TO DO: Not Implement Yet
     def addIntConst(self,integer):
         return ""
