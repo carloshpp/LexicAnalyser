@@ -1,12 +1,13 @@
 __author__ = 'Kaike'
 
 import lexic_analyser
-import tokens as TOKEN
 
-###filename = "Code.txt"
+filename = "Code.txt"
 
-###lexic_analyser.lexicAnalyser.analyse(code.read())
+code = open(filename,'r')
+
+analyser = lexic_analyser.lexicAnalyser()
+
+analyser.compile(code.read())
 
 
-
-print TOKEN.Tokens.ID.name

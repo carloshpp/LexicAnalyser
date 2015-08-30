@@ -7,86 +7,227 @@ class lexicAnalyser():
     def __init__(self):
         self.code = ""
         self.i = 0
-        #TO DO: save consts and sec tokens
         self.names = []
         self.Consts = []
 
-    def setCode(self, _code):
-        code = _code
+
+    def _setCode(self, _code):
+        self.code = _code
+        if self.code.__len__ == 0:
+            self.nextChar = ""
+        else:
+            self.nextChar = " "
         i = 0;
 
-    def compile(self):
-        self.nextToken()
+    def compile(self,_code):
+        self._setCode(_code)
+        while self.i <= self.code.__len__():
+            self.Consts.append(self.nextToken())
+
+
 
     def nextToken(self):
-        # TO DO: loop to compile the whole code
-        nextChar = ''
-        while(self.isSpace(nextChar)):
-            nextChar = self.readChar()
+        tokenSec = "NO SECONDARY TOKEN"
+        text = ""
+        token = 0
 
-        if nextChar.isalpha():
-            text = ""
+        while(self.isSpace(self.nextChar) or self.nextChar == '\n'):
+            self.nextChar = self.readChar()
+
+        if self.nextChar.isalpha():
             while True:
-                text += nextChar
-                nextChar = self.readChar()
-                if (not self.isalnum(nextChar)) and nextChar != "_":
+                text += self.nextChar
+                self.nextChar = self.readChar()
+                if (not self.nextChar.isalnum()) and self.nextChar != "_":
                     break
 
+            # Enum token goes from 1 to n, but an array goes from 0 to n-1
             token = tokens.searchKeyWord(text)
-            # TO DO: save the secundary token
-            if(token == -1):
-                tokenSec = tokens.searchName(text)
 
-        elif self.isNumeric(nextChar):
+            if(token == tokens.Tokens.ID.value):
+                tokenSec = self.searchName(text)
+            print '{0} {1} {2}'.format(tokens.Tokens(token).name,token,tokenSec)
+
+
+        elif self.isNumeric(self.nextChar):
             num = ""
             while True:
-                num += nextChar
-                nextChar = self.readChar()
-                if not self.isNumeric(nextChar):
+                num += self.nextChar
+                self.nextChar = self.readChar()
+                if not self.isNumeric(self.nextChar):
                     break
 
-            token = tokens.Tokens.Numeral.value
-            tokenSec = self.addIntConst(num)
+            token = tokens.Tokens.NUMERAL.value
+            tokenSec = num
+            print '{0} {1} {2}'.format(tokens.Tokens(token).name,token,tokenSec)
 
-        elif nextChar == '"':
+        elif self.nextChar == '"':
             text = ""
+            self.nextChar = self.readChar()
             while True:
-                text += nextChar
-                nextChar = self.readChar()
-                if nextChar == '"':
+                text += self.nextChar
+                self.nextChar = self.readChar()
+                if self.nextChar == '"':
                     break
             token = tokens.Tokens.STRING.value
             tokenSec = text
+            print '{0} {1} {2}'.format(tokens.Tokens(token).name,token, tokenSec)
+            self.nextChar = self.readChar()
         else:
-            if nextChar == '\'':
-                nextChar = self.readChar()
+            if self.nextChar == '\'':
+                self.nextChar = self.readChar()
                 token = tokens.Tokens.CHARACTER.value
-                tokenSec = self.addCharConst(nextChar)
-                nextChar = self.readChar()
-                nextChar = self.readChar()
-            elif nextChar == ':':
-                nextChar = self.readChar()
+                tokenSec = self.addCharConst(self.nextChar)
+                self.nextChar = self.readChar()
+                self.nextChar = self.readChar()
+
+            elif self.nextChar == ':':
+                self.nextChar =self.readChar()
                 token = tokens.Tokens.COLON.value
-            elif nextChar == '+':
+                print ': {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == ';':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.SEMI_COLON.value
+                print '; {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == ',':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.COMMA.value
+                print ', {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '=':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.EQUALS.value
+                print '= {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '[':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.LEFT_SQUARE.value
+                print '[ {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == ']':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.RIGHT_SQAURE.value
+                print '] {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '{':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.LEFT_BRACES.value
+                print "{ "+"{0} {1}".format(token, tokenSec)
+
+            elif self.nextChar == '}':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.RIGHT_BRACES.value
+                print "} "+ '{0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '(':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.LEFT_PARENTHESIS.value
+                print '( {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == ')':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.RIGHT_PARENTHESIS.value
+                print ') {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '&&':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.AND.value
+                print '&& {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '||':
                 nextChar = self.readChar()
-                if nextChar == self.readChar():
+                token = tokens.Tokens.OR.value
+                print '|| {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '<':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.LESS_THAN.value
+                print '< {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '>':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.GREATER_THAN.value
+                print '> {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '<=':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.LESS_OR_EQUAL.value
+                print '<= {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '>=':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.GREATER_OR_EQUAL.value
+                print '>= {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '!=':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.NOT_EQUAL.value
+                print '!= {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '==':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.EQUAL_EQUAL.value
+                print '== {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '+':
+                self.nextChar = self.readChar()
+                if self.nextChar == '+':
                     token = tokens.Tokens.PLUS_PLUS.value
-                    nextChar = self.readChar()
+                    self.nextChar = self.readChar()
+                    print '++ {0} {1}'.format(token, tokenSec)
                 else:
                     token = tokens.Tokens.PLUS.value
+                    print '+ {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '-':
+                self.nextChar = self.readChar()
+                if self.nextChar == '-':
+                    token = tokens.Tokens.MINUS_MINUS.value
+                    self.nextChar = self.readChar()
+                    print '-- {0} {1}'.format(token, tokenSec)
+                else:
+                    token = tokens.Tokens.MINUS.value
+                    print '- {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '*':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.TIMES.value
+                print '* {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '/':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.DIVIDE.value
+                print '/ {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '.':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.DOT.value
+                print '. {0} {1}'.format(token, tokenSec)
+
+            elif self.nextChar == '!':
+                self.nextChar = self.readChar()
+                token = tokens.Tokens.NOT.value
+                print '! {0} {1}'.format(token, tokenSec)
             else:
                 token = tokens.Tokens.UNKNOWN.value
+
         return token
 
 
     def isSpace(self, char):
         return " " == char
 
+    def searchName(self, name):
+        if not self.names.__contains__(name):
+            self.names.append(name)
+        return name
 
     def readChar(self):
         self.i += 1
-        if self.i-1 <= len(self.code):
-            return lexicAnalyser.code[lexicAnalyser.i-1]
+        if self.i <= len(self.code):
+            return self.code[self.i-1]
         return "\0"
 
     def isNumeric(self,ch):
@@ -96,14 +237,3 @@ class lexicAnalyser():
         except ValueError:
             return False
 
-    # TO DO: Not Implement Yet
-    def addStringConst(self, string):
-        return ""
-
-    # TO DO: Not Implement Yet
-    def addCharConst(self, ch):
-        return ""
-
-    # TO DO: Not Implement Yet
-    def addIntConst(self,integer):
-        return ""

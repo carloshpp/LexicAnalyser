@@ -1,0 +1,12 @@
+integer a, a1, a2, a3, b;
+string c;
+
+a=a+21;
+b=a*5;
+b++;
+
+function add(a, b): {
+    return a+b;
+}
+
+c = "My house is broken!";
